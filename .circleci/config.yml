@@ -11,9 +11,10 @@ jobs:
           name: Generate Code Coverage Report
           command: |
             npm run test:coverage
-            npm run test:coverage > coverage.txt
+      - run:
+          name: Create Artifacts folder and store artifacts there
+          command: |
             mkdir -p /tmp/artifacts
-            cp coverage.txt /tmp/artifacts
             cp -r coverage /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
