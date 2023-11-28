@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:21.2.0 
+    steps:
+      - checkout 
+      - run: npm install 
+      - run: npm test 
+      - run:
+          name: Generate Code Coverage Report
+          command: |
+            npm run test:coverage
+            npm run test:coverage > coverage.txt
+            mkdir -p /tmp/artifacts
+            cp coverage.txt /tmp/artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
