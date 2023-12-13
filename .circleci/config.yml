@@ -29,7 +29,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:latest # Set up a Node.js executor
+      - image: circleci/node:latest # Set up a Node.js executor!
     steps:
       - checkout # Checkout the repository
       - run: npm install # Install project dependencies
