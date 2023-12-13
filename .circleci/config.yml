@@ -1,27 +1,52 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.12.5
+
 jobs:
+  notify:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - slack/notify:
+          channel: "#general"
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "This is Misha Mosiichuk submitting the Slack assignment.",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
+
   build:
     docker:
-      - image: cimg/node:21.2.0
+      - image: circleci/node:latest # Set up a Node.js executor
     steps:
-      - checkout
-      - run: npm install
+      - checkout # Checkout the repository
+      - run: npm install # Install project dependencies
+      - run: npm test # Run unit tests using your testing framework
       - run:
           name: Generate Code Coverage Report
           command: |
             npm run test:coverage
             npm run test:coverage > coverage.txt
-      - run:
-          name: Create Artifacts folder and store artifacts there
-          command: |
             mkdir -p /tmp/artifacts
             cp coverage.txt /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
 
 workflows:
-  version: 2
-  build_and_test:
+  send_notification:
     jobs:
+      - notify:
+          context: slack-secrets
       - build
